@@ -1,0 +1,28 @@
+{
+  "name": "ebookscrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "lint": "npx eslint src/**/*",
+    "start": "npm run lint && tsc --project tsconfig.json && node dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "eslint": "^8.44.0",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@types/cli-progress": "^3.11.0",
+    "@types/epub-gen": "^0.1.0",
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12",
+    "cli-progress": "^3.12.0",
+    "epub-gen": "^0.1.0"
+  }
+}
