@@ -13,10 +13,10 @@ export function writeFile(filename: string, data: string){
 }
 
 export async function loadDataIntoFile(url: string, filename: string){
-	//if(!fs.existsSync(dest+'/'+filename)){
-	const html = await loadFromURL(url);
-	writeFile(filename, html);
-	//}
+	if(!fs.existsSync(dest+'/'+filename)){
+		const html = await loadFromURL(url);
+		writeFile(filename, html);
+	}
 
-	return html;//readFileSync(join(dest, filename), 'utf-8');
+	return readFileSync(join(dest, filename), 'utf-8');
 }

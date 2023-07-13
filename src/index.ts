@@ -1,3 +1,5 @@
+import 'source-map-support/register.js';
+
 import { loadDataIntoFile, writeFile } from './saveToFile.js';
 import { loadFromURL } from './load.js';
 import { Website, types } from './Website.js';
@@ -35,7 +37,7 @@ const main = async function () {
 
 	} else {
 		const ch = new Chrysanthemumgarden();
-		content = await ch.scrapeNovel(site.novels[0].url);
+		content = await ch.scrapeNovel(site.novels[1]);
 		content.toEPubConfig();
 	}
 

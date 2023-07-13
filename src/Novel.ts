@@ -1,5 +1,6 @@
 import { Chapter } from './Chapter.js';
 import epub from 'epub-gen';
+import { types } from './Website.js';
 
 
 export class Novel {
@@ -9,12 +10,14 @@ export class Novel {
 	content: Chapter[] = [];
 	altTitle = '';
 	author = '';
-	chapterNumber = 0;
+	chapterCount = 0;
 	synopsis = '';
-	genres = '';
-	translators = '';
+	genres: string[] = [];
+	//translators = '';
+	//editors = '';
+	contributors = '';
 	tags = '';
-	thumbnail = '';
+	thumbnail: string|undefined = '';
 
    
 	constructor(url: string, ePubName:string) {
@@ -26,8 +29,19 @@ export class Novel {
 		const options = {
 			title: this.title,
 			author: this.author,
+			publisher: types.chrysanthemumgarden,
+			cover: this.thumbnail,
 			output: './data/'+this.ePubName+'.epub',
-			content: this.content.map(ch => ch.toEPubConfig())
+			content: [
+				{
+					title: 'Synopsis',
+					data: this.synopsis,
+					excludeFromToc: true,
+					beforeToc: true
+				},
+				...this.content.map(ch => ch.toEPubConfig())
+			],
+			customOpfTemplatePath: './src/epub.opf.ejs'
 		};
 		new epub(options).promise.then(() => console.log('Done'));
 	}
