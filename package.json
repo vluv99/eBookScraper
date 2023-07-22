@@ -27,6 +27,7 @@
     "epub-gen": "^0.1.0",
     "epub-gen-memory": "^1.0.10",
     "he": "^1.2.0",
+    "sharp": "^0.32.3",
     "source-map-support": "^0.5.21"
   }
 }

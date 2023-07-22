@@ -19,5 +19,6 @@ export class Website {
 
 export const types = {
 	test: 'example',
-	chrysanthemumgarden: 'chrysanthemumgarden'
+	chrysanthemumgarden: 'chrysanthemumgarden',
+	wuxiaworld: 'wuxiaworld'
 };

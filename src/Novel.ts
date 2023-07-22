@@ -18,6 +18,8 @@ export class Novel {
 	contributors = '';
 	tags = '';
 	thumbnail: string|undefined = '';
+	rating = 0;
+	isCompleted = false;
 
    
 	constructor(url: string, ePubName:string) {
@@ -36,8 +38,8 @@ export class Novel {
 				{
 					title: 'Synopsis',
 					data: this.synopsis,
-					excludeFromToc: true,
-					beforeToc: true
+					excludeFromToc: false,
+					beforeToc: false
 				},
 				...this.content.map(ch => ch.toEPubConfig())
 			],

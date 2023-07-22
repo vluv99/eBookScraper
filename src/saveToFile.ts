@@ -4,7 +4,7 @@ import { join } from 'path';
 import * as fs from 'fs';
 import { loadFromURL } from './load.js';
 
-const dest = './data';
+export const dest = './data';
 
 export function writeFile(filename: string, data: string){
 	writeFileSync(join(dest, filename), data, {

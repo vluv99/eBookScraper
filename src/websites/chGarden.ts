@@ -1,7 +1,7 @@
 import { DataNode, NodeWithChildren } from 'domhandler';
 import { Chapter } from '../Chapter.js';
 import { Novel } from '../Novel.js';
-import { types } from '../Website.js';
+import { Website, types } from '../Website.js';
 import { sites } from '../data.js';
 import { loadDataIntoFile } from '../saveToFile.js';
 import * as cheerio from 'cheerio';
@@ -14,7 +14,7 @@ import { AuthorsNote } from '../AuthorsNote.js';
 import { Scraper } from './Scraper.js';
 
 export class Chrysanthemumgarden extends Scraper{
-	async scrapeNovel(n: Novel): Promise<Novel> {
+	async scrapeNovel(n: Novel, site:Website): Promise<Novel> {
 		const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
 		const html = await loadDataIntoFile(n.url, types.chrysanthemumgarden + '-' + n.ePubName + '_index.html');

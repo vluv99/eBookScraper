@@ -10,6 +10,7 @@ import { DataNode } from 'domhandler';
 import * as util from 'util';
 import { sites } from './data.js';
 import { Chrysanthemumgarden } from './websites/chGarden.js';
+import { Wuxiaworld } from './websites/wuxiaworld.js';
 
 console.log('Ebook Scraper Starting up');
 
@@ -29,15 +30,15 @@ async function parseHTML(html: string, site: Website) {
 const main = async function () {
 	let html, content;
 
-	const site = sites.chrysanthemumgarden;
+	const site = sites.wuxiaworld;//sites.chrysanthemumgarden;
 
 	if (isHTMLParseTestMode) {
 		html = await loadDataIntoFile(site.url, site.type + '.html');
 		//content = await parseHTML(html, site);
 
 	} else {
-		const ch = new Chrysanthemumgarden();
-		content = await ch.scrapeNovel(site.novels[1]);
+		const ch = new Wuxiaworld();//new Chrysanthemumgarden();
+		content = await ch.scrapeNovel(site.novels[0], site);
 		content.toEPubConfig();
 	}
 
