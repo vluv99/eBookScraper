@@ -33,6 +33,9 @@
         <meta property="ibooks:specified-fonts">true</meta>
         <dc:contributor id="con">Asd AAAA</dc:contributor>
         <meta refines="#con" property="role" scheme="marc:relators">trl</meta>
+        <% for(var i=0; i < tags.length; i++) { %>
+            <dc:subject><%= tags[i] %></dc:subject>
+         <% } %>
 
     </metadata>
 

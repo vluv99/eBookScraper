@@ -27,20 +27,48 @@ export class Wuxiaworld extends Scraper{
 		n.author=  (author.children[2] as DataNode).data;
 
 		n.thumbnail = $('.mantine-Paper-root img').first().attr('src');
-		if(n.thumbnail?.includes('width')){
+		if(n.thumbnail?.includes('?')){
 			const i = n.thumbnail.indexOf('?');
 			n.thumbnail = n.thumbnail.substring(0, i);
+			//n.thumbnail += '?width=1000&quality=100';
 		}
 
 		if(n.thumbnail?.includes('webp')){
 			const response = await axios.get(n.thumbnail,  { responseType: 'arraybuffer' });
-			const buffer = Buffer.from(response.data, 'utf-8');
-			const buf = sharp(buffer).jpeg().toBuffer().toString(); 
+			const buf = await sharp(response.data).jpeg().toBuffer(); 
 			fs.writeFileSync(dest+'/'+types.wuxiaworld + '-' + n.ePubName + '_cover.jpeg', buf);
 			n.thumbnail = dest+'/'+types.wuxiaworld + '-' + n.ePubName + '_cover.jpeg';
 		}
 
 		n.synopsis = '<p>' + $('.mantine-Tabs-panel .mantine-Spoiler-content .mantine-Text-root').first().text() + '</p>';
+
+
+		const a = $('.mantine-Card-root').first().children();
+		const b = $(a).contents();
+		$(b).each( function(i) {
+			const filter = $(this).text().includes('Categories');
+			if(filter){
+				$('span',this).each(function (i){
+					const c:string = $(this).text();
+					n.tags.push(c);
+				});
+				/*const ab = $(this).contents()[1];
+				const abc = $(ab).contents()[0];
+				const abcd = $(abc).contents()[0];
+				const abcde = $(abcd).contents()[0];
+				const abcdef = $(abcde).contents()[0];
+				const abcdefg = $(abcdef).children();
+
+				$(abcdefg).each( function(i) {
+					//const c:string = $(this).text();
+					//n.tags.push(c);
+				});*/
+			}	
+		});
+		/*$('.mantine-Spoiler-root a span').each( function(i) {
+			const c:string = $(this).text();
+			n.tags.push(c);
+		});*/
 
 
 		const chapters = await loadFromURL(site.url + 'api/chapters/' + n.ePubName);
@@ -73,18 +101,6 @@ export class Wuxiaworld extends Scraper{
 			} else{
 				ch.content.push('<p>' + he.encode((p as DataNode).data) + '</p>');
 			}
-
-			// TODO: make this prettier
-			/*let match: RegExpExecArray | null;
-			const fixed = d;
-
-			// eslint-disable-next-line no-cond-assign
-			while(match = subscripts.exec(d)){
-				const chars = d.split('');
-				chars.splice(match.index, match.length, 'asdasdadsaadssssssss').join();
-                
-			}*/
-			//ch.content.push('<p>' + he.encode((p as DataNode).data) + '</p>');
 		}
 
 		ch.content.push('<p id="ch_' + chNumber + '_end"></p>');

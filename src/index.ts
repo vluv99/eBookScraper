@@ -34,17 +34,15 @@ const main = async function () {
 
 	if (isHTMLParseTestMode) {
 		html = await loadDataIntoFile(site.url, site.type + '.html');
-		//content = await parseHTML(html, site);
 
 	} else {
 		const ch = new Wuxiaworld();//new Chrysanthemumgarden();
-		content = await ch.scrapeNovel(site.novels[0], site);
-		content.toEPubConfig();
+		for (let i = 20; i < site.novels.length; i++) {
+			console.log('\n ############################ \n');			
+			content = await ch.scrapeNovel(site.novels[i], site);
+			content.toEPubConfig();
+		}
 	}
-
-	//writeFile('_' + site.type + '.html', content ? '' : content!.toString());
-	//console.log(util.inspect(content, {showHidden: false, depth: null, colors: true}));
-	
 };
 
 await main();

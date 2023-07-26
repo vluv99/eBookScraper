@@ -16,7 +16,7 @@ export class Novel {
 	//translators = '';
 	//editors = '';
 	contributors = '';
-	tags = '';
+	tags: string[] = [];
 	thumbnail: string|undefined = '';
 	rating = 0;
 	isCompleted = false;
@@ -33,7 +33,8 @@ export class Novel {
 			author: this.author,
 			publisher: types.chrysanthemumgarden,
 			cover: this.thumbnail,
-			output: './data/'+this.ePubName+'.epub',
+			tags: this.tags,
+			output: './ebooks/'+ this.ePubName+'.epub',
 			content: [
 				{
 					title: 'Synopsis',
