@@ -1,85 +1,91 @@
-﻿using HtmlAgilityPack;
-using System;
-using System.Net.Http;
-using System.Web;
-using System.IO;
-
+﻿using System.Runtime.InteropServices.JavaScript;
+using Fizzler;
+using HtmlAgilityPack;
+using AngleSharp;
+using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
+using eBookScraper;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
+        //Use the default configuration for AngleSharp
+        IConfiguration config = Configuration.Default;
+
+        //Create a new context for evaluating webpages with the given config
+        IBrowsingContext context = BrowsingContext.New(config);
+
         var htmlDocument = new HtmlDocument();
+        var stringSource = "";
+        Novel novel = new Novel();
+        novel.url = "https://novelbin.me/novel-book/heaven-officials-blessing";
+
         var filePath =
             "/home/vluv/Documents/Projects/eBookScraper/eBookScraper/scraps/heaven-officials-blessing-0.html";
         if (!File.Exists(filePath))
         {
             // send GET request to url
-            var url = "https://novelbin.me/novel-book/heaven-officials-blessing";
+            var url = novel.url;
             var httpClient = new HttpClient();
             var html = httpClient.GetStringAsync(url).Result;
             htmlDocument.LoadHtml(html);
 
             // Save to file
             File.WriteAllText(filePath, html);
+            stringSource = htmlDocument.DocumentNode.OuterHtml;
         }
         else
         {
             // Read from file
             var htmlText = File.ReadAllText(filePath);
             htmlDocument.LoadHtml(htmlText);
+            stringSource = htmlDocument.DocumentNode.OuterHtml;
         }
+
+
+        IHtmlParser parser = context.GetService<IHtmlParser>()!;
+        //var source = "<h1>Some example source</h1><p>This is a paragraph element";
+        //IDocument document = parser!.ParseDocument(source);
+        IDocument document = parser.ParseDocument(stringSource);
+
 
         // Get the title
-        var titleElement = htmlDocument.DocumentNode.SelectSingleNode("//h3[@class='title']");
-        var title = HttpUtility.HtmlDecode(titleElement.InnerText).Trim();
+        var title = document.QuerySelector(".title")?.TextContent.Trim();
+        novel.title = title ?? "";
         Console.WriteLine("title: " + title);
 
-        var infoBlockElement = htmlDocument.DocumentNode.SelectSingleNode("//ul[@class='info info-meta']");
-
-        // Get author name
-        foreach (var node in infoBlockElement.ChildNodes)
+        var infoBlock = document.QuerySelector(".info.info-meta");
+        if (infoBlock != null)
         {
-            if (node.NodeType == HtmlNodeType.Element)
+            foreach (var element in infoBlock.Children)
             {
-                var h3Element = node.SelectSingleNode("h3");
-                if (h3Element != null)
+                var label = element.QuerySelector("h3")?.TextContent.Trim();
+                var content = "";
+                if (label != null && label.Contains("Author"))
                 {
-                    Console.WriteLine(h3Element.InnerText);
+                    //TODO: check if element.children has more than 1 content, if it doesn't we need to use ChildNodes otherwise Children can be used
+                    content = element.Children[1].TextContent.Trim();
+                    novel.author = content;
+                    Console.WriteLine("author: " + novel.author);
                 }
-                else if (node.SelectSingleNode("*/h3") != null)
+                else if (label != null && label.Contains("Alternative names"))
                 {
-                    Console.WriteLine(node.SelectSingleNode("*/h3")?.InnerText ?? "N/A");
+                    content = element.ChildNodes[2].TextContent.Trim();
+                    novel.altNames = content.Split(",");
+                    Console.WriteLine("alt names: " + string.Join(",", novel.altNames));
                 }
-
-                Console.WriteLine("...............");
-
-                var dataElement = node.ChildNodes[2];
-                if (dataElement?.InnerText != null)
+                else if (label != null && label.Contains("Status"))
                 {
-                    Console.WriteLine(dataElement.InnerText);
+                    content = element.Children[1].TextContent.Trim();
+                    novel.status = content;
+                    Console.WriteLine("status: " + novel.status);
                 }
-
-                //var dataElement = node.ChildNodes.First((n) => n.NodeType == HtmlNodeType.Element);
-                // if (dataElement != null)
-                // {
-                //     Console.WriteLine(dataElement.InnerText);
-                // }
-
-                // else if (node.SelectSingleNode("*/h3") != null)
-                // {
-                //     Console.WriteLine(node.SelectSingleNode("*/h3")?.InnerText ?? "N/A");
-                // }
-                Console.WriteLine("##################################################");
+                else if (label != null && label.Contains("Genre"))
+                {
+                    //TODO
+                }
             }
         }
-
-
-        //String author = HttpUtility.HtmlDecode(titleElement.InnerText).Trim();
-        //Console.WriteLine("title: " + author);
-
-        // Get completion status
-
-        // Get image
     }
 }
