@@ -71,7 +71,8 @@ internal class Program
                 }
                 else if (label != null && label.Contains("Genre"))
                 {
-                    //TODO
+                    book.genres = element.QuerySelectorAll("a").Select(a => a.TextContent.Trim()).ToList();
+                    Console.WriteLine("genre: " + string.Join(", ", book.genres));
                 }
             }
         }
