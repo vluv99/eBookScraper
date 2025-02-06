@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices.JavaScript;
+using System.Web;
 using Fizzler;
 using HtmlAgilityPack;
 using AngleSharp;
@@ -46,6 +47,7 @@ internal class Program
         book.title = title ?? "";
         Console.WriteLine("title: " + title);
 
+        // Get Book infos
         var infoBlock = document.QuerySelector(".info.info-meta");
         if (infoBlock != null)
         {
@@ -76,5 +78,10 @@ internal class Program
                 }
             }
         }
+
+        // Get description
+        var desc = document.QuerySelector(".desc-text")?.TextContent.Trim();
+        book.description = desc ?? "";
+        Console.WriteLine("description: " + desc);
     }
 }
