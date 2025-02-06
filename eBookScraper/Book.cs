@@ -9,4 +9,6 @@ class Book
     public string status = "";
     public string description = "";
     public string url = "";
+    public int chapterNum = 0;
+    public decimal rating = 0;
 }

@@ -45,7 +45,7 @@ internal class Program
         // Get the title
         var title = document.QuerySelector(".title")?.TextContent.Trim();
         book.title = title ?? "";
-        Console.WriteLine("title: " + title);
+        Console.WriteLine("title: " + book.title);
 
         // Get Book infos
         var infoBlock = document.QuerySelector(".info.info-meta");
@@ -82,6 +82,11 @@ internal class Program
         // Get description
         var desc = document.QuerySelector(".desc-text")?.TextContent.Trim();
         book.description = desc ?? "";
-        Console.WriteLine("description: " + desc);
+        Console.WriteLine("description: " + book.description);
+
+        // Get rating
+        var rating = document.QuerySelector("span[itemprop='ratingValue']")?.TextContent.Trim();
+        book.rating = rating != null ? Convert.ToDecimal(rating) : 0;
+        Console.WriteLine("rating: " + book.rating);
     }
 }
