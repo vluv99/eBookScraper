@@ -9,6 +9,6 @@ class Book
     public string status = "";
     public string description = "";
     public string url = "";
-    public int chapterNum = 0;
+    public List<Chapter> chapterList = [];
     public decimal rating = 0;
 }

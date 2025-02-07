@@ -1,8 +1,4 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using System.Web;
-using Fizzler;
-using HtmlAgilityPack;
-using AngleSharp;
+﻿using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using eBookScraper;
@@ -72,7 +68,28 @@ internal class Program
         Console.WriteLine("rating: " + book.rating);
 
         // Get chapters list
+        var chaptersUrl = document.QuerySelector("#tab-chapters-title")?.Attributes["id"]?.Value;
+        if (chaptersUrl != null)
+        {
+            // for some reason the href isn't correct, but the id is, so using that
+            string chaptersHtml = Fetcher.GetPage(book.url + "#" + chaptersUrl);
+            var chaptersDocument = parser.ParseDocument(chaptersHtml);
 
+            var chaptersListElement = chaptersDocument.QuerySelectorAll(".list-chapter");
+            foreach (var element in chaptersListElement)
+            {
+                var res = element.QuerySelectorAll("a")?.Select((a) =>
+                {
+                    Chapter chapter = new Chapter();
+                    chapter.title = a.TextContent.Trim();
+                    chapter.url = a.Attributes["href"].Value ?? "";
+                    return chapter;
+                }).ToList();
+                book.chapterList.AddRange(res ?? new List<Chapter>());
+            }
+
+            Console.WriteLine("chapters: " + string.Join(", ", book.chapterList.Select(ch => ch.title)));
+        }
 
         //TODO: fetch chapters
     }
