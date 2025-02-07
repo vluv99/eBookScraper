@@ -31,7 +31,7 @@ public class Fetcher
 
     static string GetFileName(string url)
     {
-        var uri = new Uri(url);
-        return HttpUtility.UrlDecode(uri.Segments[uri.Segments.Length - 1]);
+        var segments = url.Split('/');
+        return segments[segments.Length - 1];
     }
 }
