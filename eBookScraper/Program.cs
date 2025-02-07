@@ -13,25 +13,7 @@ internal class Program
     {
         Book book = new Book();
         book.url = "https://novelbin.me/novel-book/heaven-officials-blessing";
-        string html = "";
-
-        var filePath =
-            "/home/vluv/Documents/Projects/eBookScraper/eBookScraper/scraps/heaven-officials-blessing-0.html";
-        if (!File.Exists(filePath))
-        {
-            // send GET request to url
-            var url = book.url;
-            var httpClient = new HttpClient();
-            html = httpClient.GetStringAsync(url).Result;
-
-            // Save to file
-            File.WriteAllText(filePath, html);
-        }
-        else
-        {
-            // Read from file
-            html = File.ReadAllText(filePath);
-        }
+        string html = Fetcher.GetPage(book.url);
 
         //Use the default configuration for AngleSharp
         IConfiguration config = Configuration.Default;
@@ -88,5 +70,10 @@ internal class Program
         var rating = document.QuerySelector("span[itemprop='ratingValue']")?.TextContent.Trim();
         book.rating = rating != null ? Convert.ToDecimal(rating) : 0;
         Console.WriteLine("rating: " + book.rating);
+
+        // Get chapters list
+
+
+        //TODO: fetch chapters
     }
 }
