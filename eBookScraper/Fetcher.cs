@@ -1,12 +1,13 @@
 using System.Web;
+using PuppeteerSharp;
 
 namespace eBookScraper;
 
 public class Fetcher
 {
-    public static string GetPage(string url)
+    public static async Task<string> GetPage(string url, bool usePuppetieer = false)
     {
-        string html = "";
+        var html = "";
         var fileName = GetFileName(url);
         var filePath =
             "/home/vluv/Documents/Projects/eBookScraper/eBookScraper/scraps/" + fileName + ".html";
@@ -15,7 +16,15 @@ public class Fetcher
         {
             // send GET request to url
             var httpClient = new HttpClient();
-            html = httpClient.GetStringAsync(url).Result;
+
+            if (usePuppetieer)
+            {
+                html = await UsePuppeteer(url);
+            }
+            else
+            {
+                html = httpClient.GetStringAsync(url).Result;
+            }
 
             // Save to file
             File.WriteAllText(filePath, html);
@@ -29,9 +38,26 @@ public class Fetcher
         return html;
     }
 
-    static string GetFileName(string url)
+    private static string GetFileName(string url)
     {
         var segments = url.Split('/');
         return segments[segments.Length - 1];
+    }
+
+    private static async Task<string> UsePuppeteer(string url)
+    {
+        var launchOptions = new LaunchOptions()
+        {
+            Headless = true
+        };
+
+        await new BrowserFetcher().DownloadAsync();
+        await using (var browser = await Puppeteer.LaunchAsync(launchOptions))
+        await using (var page = await browser.NewPageAsync())
+        {
+            await page.GoToAsync(url);
+            await page.WaitForNetworkIdleAsync();
+            return await page.GetContentAsync();
+        }
     }
 }

@@ -69,7 +69,7 @@ public class Novelbin : IWebsite
         if (chaptersUrl != null)
         {
             // for some reason the href isn't correct, but the id is, so using that
-            string chaptersHtml = await Fetcher.GetPage(bookUrl + "#" + chaptersUrl);
+            string chaptersHtml = await Fetcher.GetPage(bookUrl + "#" + chaptersUrl, true);
             var chaptersDocument = Parser.ParseDocument(chaptersHtml);
 
             var chaptersListElement = chaptersDocument.QuerySelectorAll(".list-chapter");
