@@ -1,6 +1,6 @@
 namespace eBookScraper;
 
-class Book
+public class Book
 {
     public string title = "";
     public string author = "";

@@ -21,48 +21,73 @@ public class Novelbin : IWebsite
         Parser = context.GetService<IHtmlParser>()!;
     }
 
-    public string GetTitle(IDocument document)
+    public async Task<Book> GetBook(string url)
+    {
+        Book book = new Book();
+        book.url = url;
+        string html = await Fetcher.GetPage(url);
+        IDocument document = Parser.ParseDocument(html);
+
+        // Get the title
+        book.title = GetTitle(document);
+        // Get description
+        book.description = GetDescription(document);
+        // Get book infos
+        book.author = GetAuthor(document);
+        book.altNames = GetAlternativeNames(document);
+        book.status = GetStatus(document);
+        book.genres = GetGenres(document);
+        // Get rating
+        book.rating = GetRating(document);
+
+        // Get chapters list
+        book.chapters = await GetChapters(document, book.url);
+
+        return book;
+    }
+
+    private string GetTitle(IDocument document)
     {
         return document.QuerySelector(".title")?.TextContent.Trim() ?? "";
     }
 
-    public string GetDescription(IDocument document)
+    private string GetDescription(IDocument document)
     {
         return document.QuerySelector(".desc-text")?.TextContent.Trim() ?? "";
     }
 
-    public string GetAuthor(IDocument document)
+    private string GetAuthor(IDocument document)
     {
         var element = GetInfoBlockData(document, "Author");
         return element?.Children[1].TextContent.Trim() ?? "";
     }
 
-    public List<string> GetAlternativeNames(IDocument document)
+    private List<string> GetAlternativeNames(IDocument document)
     {
         var element = GetInfoBlockData(document, "Alternative names");
         var content = element?.ChildNodes[2].TextContent.Trim();
         return content?.Split(",").Select((name) => name.Trim()).ToList() ?? [];
     }
 
-    public string GetStatus(IDocument document)
+    private string GetStatus(IDocument document)
     {
         var element = GetInfoBlockData(document, "Status");
         return element?.Children[1].TextContent.Trim() ?? "";
     }
 
-    public List<string> GetGenres(IDocument document)
+    private List<string> GetGenres(IDocument document)
     {
         var element = GetInfoBlockData(document, "Genre");
         return element?.QuerySelectorAll("a").Select(a => a.TextContent.Trim()).ToList() ?? [];
     }
 
-    public decimal GetRating(IDocument document)
+    private decimal GetRating(IDocument document)
     {
         var rating = document.QuerySelector("span[itemprop='ratingValue']")?.TextContent.Trim();
         return rating != null ? Convert.ToDecimal(rating) : 0;
     }
 
-    public async Task<List<Chapter>> GetChapters(IDocument document, string bookUrl)
+    private async Task<List<Chapter>> GetChapters(IDocument document, string bookUrl)
     {
         var chaptersUrl = document.QuerySelector("#tab-chapters-title")?.Attributes["id"]?.Value;
         List<Chapter> chapters = new List<Chapter>();
