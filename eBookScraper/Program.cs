@@ -2,95 +2,40 @@
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using eBookScraper;
+using eBookScraper.websites;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
+        MainAsync(args).GetAwaiter().GetResult();
+    }
+
+    static async Task MainAsync(string[] args)
+    {
         Book book = new Book();
         book.url = "https://novelbin.me/novel-book/heaven-officials-blessing";
-        string html = Fetcher.GetPage(book.url);
+        string html = await Fetcher.GetPage(book.url);
 
-        //Use the default configuration for AngleSharp
-        IConfiguration config = Configuration.Default;
-
-        //Create a new context for evaluating webpages with the given config
-        IBrowsingContext context = BrowsingContext.New(config);
-
-        IHtmlParser parser = context.GetService<IHtmlParser>()!;
-        IDocument document = parser.ParseDocument(html);
+        Novelbin website = new Novelbin();
+        IDocument document = website.Parser.ParseDocument(html);
 
         // Get the title
-        var title = document.QuerySelector(".title")?.TextContent.Trim();
-        book.title = title ?? "";
-        Console.WriteLine("title: " + book.title);
-
-        // Get Book infos
-        var infoBlock = document.QuerySelector(".info.info-meta");
-        if (infoBlock != null)
-        {
-            foreach (var element in infoBlock.Children)
-            {
-                var label = element.QuerySelector("h3")?.TextContent.Trim();
-                if (label != null && label.Contains("Author"))
-                {
-                    //TODO: check if element.children has more than 1 content, if it doesn't we need to use ChildNodes otherwise Children can be used
-                    book.author = element.Children[1].TextContent.Trim();
-                    Console.WriteLine("author: " + book.author);
-                }
-                else if (label != null && label.Contains("Alternative names"))
-                {
-                    var content = element.ChildNodes[2].TextContent.Trim();
-                    book.altNames = content.Split(",").Select((name) => name.Trim()).ToList();
-                    Console.WriteLine("alt names: " + string.Join(", ", book.altNames));
-                }
-                else if (label != null && label.Contains("Status"))
-                {
-                    book.status = element.Children[1].TextContent.Trim();
-                    Console.WriteLine("status: " + book.status);
-                }
-                else if (label != null && label.Contains("Genre"))
-                {
-                    book.genres = element.QuerySelectorAll("a").Select(a => a.TextContent.Trim()).ToList();
-                    Console.WriteLine("genre: " + string.Join(", ", book.genres));
-                }
-            }
-        }
-
+        book.title = website.GetTitle(document);
         // Get description
-        var desc = document.QuerySelector(".desc-text")?.TextContent.Trim();
-        book.description = desc ?? "";
-        Console.WriteLine("description: " + book.description);
-
+        book.description = website.GetDescription(document);
+        // Get book infos
+        book.author = website.GetAuthor(document);
+        book.altNames = website.GetAlternativeNames(document);
+        book.status = website.GetStatus(document);
+        book.genres = website.GetGenres(document);
         // Get rating
-        var rating = document.QuerySelector("span[itemprop='ratingValue']")?.TextContent.Trim();
-        book.rating = rating != null ? Convert.ToDecimal(rating) : 0;
-        Console.WriteLine("rating: " + book.rating);
+        book.rating = website.GetRating(document);
 
         // Get chapters list
-        var chaptersUrl = document.QuerySelector("#tab-chapters-title")?.Attributes["id"]?.Value;
-        if (chaptersUrl != null)
-        {
-            // for some reason the href isn't correct, but the id is, so using that
-            string chaptersHtml = Fetcher.GetPage(book.url + "#" + chaptersUrl);
-            var chaptersDocument = parser.ParseDocument(chaptersHtml);
+        book.chapters = await website.GetChapters(document, book.url);
 
-            var chaptersListElement = chaptersDocument.QuerySelectorAll(".list-chapter");
-            foreach (var element in chaptersListElement)
-            {
-                var res = element.QuerySelectorAll("a")?.Select((a) =>
-                {
-                    Chapter chapter = new Chapter();
-                    chapter.title = a.TextContent.Trim();
-                    chapter.url = a.Attributes["href"].Value ?? "";
-                    return chapter;
-                }).ToList();
-                book.chapterList.AddRange(res ?? new List<Chapter>());
-            }
 
-            Console.WriteLine("chapters: " + string.Join(", ", book.chapterList.Select(ch => ch.title)));
-        }
-
-        //TODO: fetch chapters
+        book.ConsoleContent();
     }
 }
