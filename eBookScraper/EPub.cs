@@ -39,6 +39,8 @@ public class EPubClass
         // cover
         epub.AddXhtmlData("page-0.xhtml",
             pageTemplate.Replace("{0}", book.Title).Replace("{1}", book.Description));
+        epub.AddNavPoint("Cover", "page-0.xhtml",
+            0);
 
         // chapter
         for (var index = 0; index < book.Chapters.Count; index++)
