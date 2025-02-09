@@ -58,6 +58,24 @@ public class Novelbin : IWebsite
         return document.QuerySelector(".desc-text")?.TextContent.Trim() ?? "";
     }
 
+    private IElement? GetInfoBlockData(IDocument document, string searchLabel)
+    {
+        var infoBlock = document.QuerySelector(".info.info-meta");
+        if (infoBlock != null)
+        {
+            foreach (var element in infoBlock.Children)
+            {
+                var label = element.QuerySelector("h3")?.TextContent.Trim();
+                if (label != null && label.Contains(searchLabel))
+                {
+                    return element;
+                }
+            }
+        }
+
+        return null;
+    }
+
     private string GetAuthor(IDocument document)
     {
         var element = GetInfoBlockData(document, "Author");
@@ -112,26 +130,28 @@ public class Novelbin : IWebsite
                 chapters.AddRange(res ?? new List<Chapter>());
             }
         }
-        //TODO: fetch the actual chapter content
+
+
+        // fetch chapters
+        foreach (var chapter in chapters)
+        {
+            chapter.content.AddRange(await GetChapterContent(chapter));
+        }
 
         return chapters;
     }
 
-    private IElement? GetInfoBlockData(IDocument document, string searchLabel)
+    private async Task<List<string>> GetChapterContent(Chapter chapter)
     {
-        var infoBlock = document.QuerySelector(".info.info-meta");
-        if (infoBlock != null)
+        var content = new List<string>();
+        if (chapter.url != "")
         {
-            foreach (var element in infoBlock.Children)
-            {
-                var label = element.QuerySelector("h3")?.TextContent.Trim();
-                if (label != null && label.Contains(searchLabel))
-                {
-                    return element;
-                }
-            }
+            var html = await Fetcher.GetPage(chapter.url, "HOB");
+            IDocument chapterDocument = Parser.ParseDocument(html);
+            content = chapterDocument.QuerySelectorAll("#chr-content > p")
+                .Select((p) => p.OuterHtml.Trim()).ToList();
         }
 
-        return null;
+        return content;
     }
 }
