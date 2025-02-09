@@ -4,7 +4,7 @@ namespace eBookScraper.websites;
 
 public interface IWebsite
 {
-    string BaseUrl { get; }
+    string WebsiteName { get; }
 
     Task<Book> GetBook(string url);
 }

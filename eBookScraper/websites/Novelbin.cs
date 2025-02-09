@@ -7,10 +7,11 @@ namespace eBookScraper.websites;
 
 public class Novelbin : IWebsite
 {
-    public string BaseUrl { get; } = "https://novelbin.me";
-    public IHtmlParser Parser { get; }
+    public string WebsiteName { get; } = "novelbin";
+    private IHtmlParser Parser { get; }
+    private string Prefix { get; }
 
-    public Novelbin()
+    public Novelbin(string prefix)
     {
         //Use the default configuration for AngleSharp
         IConfiguration config = Configuration.Default;
@@ -19,13 +20,14 @@ public class Novelbin : IWebsite
         IBrowsingContext context = BrowsingContext.New(config);
 
         Parser = context.GetService<IHtmlParser>()!;
+        Prefix = prefix;
     }
 
     public async Task<Book> GetBook(string url)
     {
         Book book = new Book();
         book.url = url;
-        string html = await Fetcher.GetPage(url);
+        string html = await Fetcher.GetPage(url, Prefix);
         IDocument document = Parser.ParseDocument(html);
 
         // Get the title
@@ -94,7 +96,7 @@ public class Novelbin : IWebsite
         if (chaptersUrl != null)
         {
             // for some reason the href isn't correct, but the id is, so using that
-            string chaptersHtml = await Fetcher.GetPage(bookUrl + "#" + chaptersUrl, true);
+            string chaptersHtml = await Fetcher.GetPage(bookUrl + "#" + chaptersUrl, Prefix, true);
             var chaptersDocument = Parser.ParseDocument(chaptersHtml);
 
             var chaptersListElement = chaptersDocument.QuerySelectorAll(".list-chapter");

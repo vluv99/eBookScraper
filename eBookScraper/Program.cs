@@ -15,7 +15,7 @@ internal class Program
     {
         var url = "https://novelbin.me/novel-book/heaven-officials-blessing";
 
-        Novelbin website = new Novelbin();
+        Novelbin website = new Novelbin("HOB");
         Book book = await website.GetBook(url);
 
         book.ConsoleContent();

@@ -5,12 +5,14 @@ namespace eBookScraper;
 
 public class Fetcher
 {
-    public static async Task<string> GetPage(string url, bool usePuppetieer = false)
+    private const string SavePath = "/home/vluv/Documents/Projects/eBookScraper/eBookScraper/scraps/";
+
+    public static async Task<string> GetPage(string url, string prefix, bool usePuppetieer = false)
     {
         var html = "";
         var fileName = GetFileName(url);
         var filePath =
-            "/home/vluv/Documents/Projects/eBookScraper/eBookScraper/scraps/" + fileName + ".html";
+            SavePath + prefix + "-" + fileName + ".html";
 
         if (!File.Exists(filePath))
         {
