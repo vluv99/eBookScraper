@@ -46,8 +46,11 @@ public class EPubClass
             var name = $"page-{index + 1}.xhtml";
             var chapter = book.Chapters[index];
 
+            var content = chapter.Content
+                .Select(c => c.Replace("<br>", "<br/>"));
+
             epub.AddXhtmlData(name,
-                pageTemplate.Replace("{0}", chapter.Title).Replace("{1}", string.Join(" ", chapter.Content)));
+                pageTemplate.Replace("{0}", chapter.Title).Replace("{1}", string.Join(" ", content)));
             epub.AddNavPoint(chapter.Title, name,
                 index + 1);
         }

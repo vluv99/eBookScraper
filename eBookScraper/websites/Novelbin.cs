@@ -156,17 +156,28 @@ public class Novelbin : IWebsite
         {
             var html = await Fetcher.GetPage(chapter.Url, "HOB");
             IDocument chapterDocument = Parser.ParseDocument(html);
-            content = chapterDocument.QuerySelectorAll("#chr-content > p")
+            content = chapterDocument
+                .QuerySelectorAll("#chr-content > p")
                 .Select((p) =>
                 {
                     var containsImg = p.QuerySelector("img");
                     if (containsImg != null)
                     {
+                        p.RemoveChild(containsImg);
+                    }
+
+                    return p;
+                })
+                .Select(p =>
+                {
+                    if (String.IsNullOrWhiteSpace(p.InnerHtml))
+                    {
                         return "";
                     }
 
                     return p.OuterHtml.Trim();
-                }).ToList();
+                })
+                .ToList();
         }
 
         return content;
