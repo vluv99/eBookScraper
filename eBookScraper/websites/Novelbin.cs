@@ -32,6 +32,8 @@ public class Novelbin : IWebsite
 
         // Get the title
         book.Title = GetTitle(document);
+        // Get the image url
+        book.ImageUrl = GetImageUrl(document);
         // Get description
         book.Description = GetDescription(document);
         // Get book infos
@@ -51,6 +53,12 @@ public class Novelbin : IWebsite
     private string GetTitle(IDocument document)
     {
         return document.QuerySelector(".title")?.TextContent.Trim() ?? "";
+    }
+
+    private string GetImageUrl(IDocument document)
+    {
+        var e = document.QuerySelector(".book > img");
+        return e?.Attributes.ToList().First(attr => attr.Name == "data-src").Value ?? "";
     }
 
     private string GetDescription(IDocument document)

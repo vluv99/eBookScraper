@@ -3,6 +3,7 @@ namespace eBookScraper;
 public class Book
 {
     public string Title = "";
+    public string ImageUrl = "";
     public string Author = "";
     public List<string> AltNames = [];
     public List<string> Genres = [];
@@ -15,6 +16,7 @@ public class Book
     public void ConsoleContent()
     {
         Console.WriteLine("title: " + Title);
+        Console.WriteLine("imageUrl: " + ImageUrl);
         Console.WriteLine("author: " + Author);
         Console.WriteLine("alt names: " + string.Join(", ", AltNames));
         Console.WriteLine("status: " + Status);
