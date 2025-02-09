@@ -12,6 +12,7 @@
         <PackageReference Include="Fizzler.Systems.HtmlAgilityPack" Version="1.2.1"/>
         <PackageReference Include="HtmlAgilityPack" Version="1.11.72"/>
         <PackageReference Include="PuppeteerSharp" Version="20.1.0"/>
+        <PackageReference Include="VIEApps.Components.Utility.Epub" Version="10.9.2501.2"/>
     </ItemGroup>
 
     <ItemGroup>

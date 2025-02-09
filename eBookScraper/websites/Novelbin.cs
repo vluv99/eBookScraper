@@ -58,7 +58,7 @@ public class Novelbin : IWebsite
     private string GetImageUrl(IDocument document)
     {
         var e = document.QuerySelector(".book > img");
-        return e?.Attributes.ToList().First(attr => attr.Name == "data-src").Value ?? "";
+        return e?.Attributes.First(attr => attr.Name == "data-src").Value ?? "";
     }
 
     private string GetDescription(IDocument document)
@@ -157,7 +157,16 @@ public class Novelbin : IWebsite
             var html = await Fetcher.GetPage(chapter.Url, "HOB");
             IDocument chapterDocument = Parser.ParseDocument(html);
             content = chapterDocument.QuerySelectorAll("#chr-content > p")
-                .Select((p) => p.OuterHtml.Trim()).ToList();
+                .Select((p) =>
+                {
+                    var containsImg = p.QuerySelector("img");
+                    if (containsImg != null)
+                    {
+                        return "";
+                    }
+
+                    return p.OuterHtml.Trim();
+                }).ToList();
         }
 
         return content;

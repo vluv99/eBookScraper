@@ -17,7 +17,9 @@ internal class Program
 
         Novelbin website = new Novelbin("HOB");
         Book book = await website.GetBook(url);
+        //book.ConsoleContent();
 
-        book.ConsoleContent();
+        var path = await EPubClass.Generator(book);
+        Console.WriteLine(path);
     }
 }

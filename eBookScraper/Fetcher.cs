@@ -5,7 +5,7 @@ namespace eBookScraper;
 
 public class Fetcher
 {
-    private const string SavePath = "/home/vluv/Documents/Projects/eBookScraper/eBookScraper/scraps/";
+    public const string SavePath = "/home/vluv/Documents/Projects/eBookScraper/eBookScraper/scraps/";
 
     public static async Task<string> GetPage(string url, string prefix, bool usePuppetieer = false)
     {
