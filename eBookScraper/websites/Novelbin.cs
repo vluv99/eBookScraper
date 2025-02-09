@@ -26,24 +26,24 @@ public class Novelbin : IWebsite
     public async Task<Book> GetBook(string url)
     {
         Book book = new Book();
-        book.url = url;
+        book.Url = url;
         string html = await Fetcher.GetPage(url, Prefix);
         IDocument document = Parser.ParseDocument(html);
 
         // Get the title
-        book.title = GetTitle(document);
+        book.Title = GetTitle(document);
         // Get description
-        book.description = GetDescription(document);
+        book.Description = GetDescription(document);
         // Get book infos
-        book.author = GetAuthor(document);
-        book.altNames = GetAlternativeNames(document);
-        book.status = GetStatus(document);
-        book.genres = GetGenres(document);
+        book.Author = GetAuthor(document);
+        book.AltNames = GetAlternativeNames(document);
+        book.Status = GetStatus(document);
+        book.Genres = GetGenres(document);
         // Get rating
-        book.rating = GetRating(document);
+        book.Rating = GetRating(document);
 
         // Get chapters list
-        book.chapters = await GetChapters(document, book.url);
+        book.Chapters = await GetChapters(document, book.Url);
 
         return book;
     }
@@ -123,8 +123,8 @@ public class Novelbin : IWebsite
                 var res = element.QuerySelectorAll("a")?.Select((a) =>
                 {
                     Chapter chapter = new Chapter();
-                    chapter.title = a.TextContent.Trim().Replace("\u00A0", "").Replace("\u200C", "");
-                    chapter.url = a.Attributes["href"]?.Value ?? "";
+                    chapter.Title = a.TextContent.Trim().Replace("\u00A0", "").Replace("\u200C", "");
+                    chapter.Url = a.Attributes["href"]?.Value ?? "";
                     return chapter;
                 }).ToList();
                 chapters.AddRange(res ?? new List<Chapter>());
@@ -135,7 +135,7 @@ public class Novelbin : IWebsite
         // fetch chapters
         foreach (var chapter in chapters)
         {
-            chapter.content.AddRange(await GetChapterContent(chapter));
+            chapter.Content.AddRange(await GetChapterContent(chapter));
         }
 
         return chapters;
@@ -144,9 +144,9 @@ public class Novelbin : IWebsite
     private async Task<List<string>> GetChapterContent(Chapter chapter)
     {
         var content = new List<string>();
-        if (chapter.url != "")
+        if (chapter.Url != "")
         {
-            var html = await Fetcher.GetPage(chapter.url, "HOB");
+            var html = await Fetcher.GetPage(chapter.Url, "HOB");
             IDocument chapterDocument = Parser.ParseDocument(html);
             content = chapterDocument.QuerySelectorAll("#chr-content > p")
                 .Select((p) => p.OuterHtml.Trim()).ToList();

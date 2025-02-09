@@ -4,7 +4,7 @@ namespace eBookScraper;
 
 public class Chapter
 {
-    public string title = "";
-    public string url = "";
-    public List<string> content = [];
+    public string Title = "";
+    public string Url = "";
+    public List<string> Content = [];
 }
