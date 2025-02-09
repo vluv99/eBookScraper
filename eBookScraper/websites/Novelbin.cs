@@ -105,7 +105,7 @@ public class Novelbin : IWebsite
                 var res = element.QuerySelectorAll("a")?.Select((a) =>
                 {
                     Chapter chapter = new Chapter();
-                    chapter.title = a.TextContent.Trim();
+                    chapter.title = a.TextContent.Trim().Replace("\u00A0", "").Replace("\u200C", "");
                     chapter.url = a.Attributes["href"]?.Value ?? "";
                     return chapter;
                 }).ToList();
