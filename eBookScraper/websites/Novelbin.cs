@@ -1,6 +1,5 @@
 using AngleSharp;
 using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 
 namespace eBookScraper.websites;
@@ -14,10 +13,10 @@ public class Novelbin : IWebsite
     public Novelbin(string prefix)
     {
         //Use the default configuration for AngleSharp
-        IConfiguration config = Configuration.Default;
+        var config = Configuration.Default;
 
         //Create a new context for evaluating webpages with the given config
-        IBrowsingContext context = BrowsingContext.New(config);
+        var context = BrowsingContext.New(config);
 
         Parser = context.GetService<IHtmlParser>()!;
         Prefix = prefix;
@@ -25,9 +24,8 @@ public class Novelbin : IWebsite
 
     public async Task<Book> GetBook(string url)
     {
-        Book book = new Book();
-        book.Url = url;
-        string html = await Fetcher.GetPage(url, Prefix);
+        var book = new Book { Url = url };
+        var html = await Fetcher.GetPage(url, Prefix);
         IDocument document = Parser.ParseDocument(html);
 
         // Get the title
@@ -118,7 +116,7 @@ public class Novelbin : IWebsite
     private async Task<List<Chapter>> GetChapters(IDocument document, string bookUrl)
     {
         var chaptersUrl = document.QuerySelector("#tab-chapters-title")?.Attributes["id"]?.Value;
-        List<Chapter> chapters = new List<Chapter>();
+        var chapters = new List<Chapter>();
         if (chaptersUrl != null)
         {
             // for some reason the href isn't correct, but the id is, so using that
@@ -130,12 +128,14 @@ public class Novelbin : IWebsite
             {
                 var res = element.QuerySelectorAll("a")?.Select((a) =>
                 {
-                    Chapter chapter = new Chapter();
-                    chapter.Title = a.TextContent.Trim().Replace("\u00A0", "").Replace("\u200C", "");
-                    chapter.Url = a.Attributes["href"]?.Value ?? "";
+                    var chapter = new Chapter
+                    {
+                        Title = a.TextContent.Trim().Replace("\u00A0", "").Replace("\u200C", ""),
+                        Url = a.Attributes["href"]?.Value ?? ""
+                    };
                     return chapter;
                 }).ToList();
-                chapters.AddRange(res ?? new List<Chapter>());
+                chapters.AddRange(res ?? []);
             }
         }
 

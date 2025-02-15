@@ -1,9 +1,8 @@
-using System.Web;
 using PuppeteerSharp;
 
 namespace eBookScraper;
 
-public class Fetcher
+public static class Fetcher
 {
     public const string SavePath = "/home/vluv/Documents/Projects/eBookScraper/eBookScraper/scraps/";
 
@@ -29,12 +28,12 @@ public class Fetcher
             }
 
             // Save to file
-            File.WriteAllText(filePath, html);
+            await File.WriteAllTextAsync(filePath, html);
         }
         else
         {
             // Read from file
-            html = File.ReadAllText(filePath);
+            html = await File.ReadAllTextAsync(filePath);
         }
 
         return html;
@@ -54,12 +53,12 @@ public class Fetcher
         };
 
         await new BrowserFetcher().DownloadAsync();
-        await using (var browser = await Puppeteer.LaunchAsync(launchOptions))
-        await using (var page = await browser.NewPageAsync())
-        {
-            await page.GoToAsync(url);
-            await page.WaitForNetworkIdleAsync();
-            return await page.GetContentAsync();
-        }
+
+        await using var browser = await Puppeteer.LaunchAsync(launchOptions);
+        await using var page = await browser.NewPageAsync();
+
+        await page.GoToAsync(url);
+        await page.WaitForNetworkIdleAsync();
+        return await page.GetContentAsync();
     }
 }

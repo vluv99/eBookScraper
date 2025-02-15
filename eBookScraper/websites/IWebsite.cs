@@ -1,5 +1,3 @@
-using AngleSharp.Dom;
-
 namespace eBookScraper.websites;
 
 public interface IWebsite

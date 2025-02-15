@@ -1,5 +1,3 @@
-using AngleSharp.Dom;
-
 namespace eBookScraper;
 
 public class Chapter

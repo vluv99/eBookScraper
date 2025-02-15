@@ -1,7 +1,4 @@
-﻿using AngleSharp;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
-using eBookScraper;
+﻿using eBookScraper;
 using eBookScraper.websites;
 
 internal class Program
@@ -15,8 +12,8 @@ internal class Program
     {
         var url = "https://novelbin.me/novel-book/heaven-officials-blessing";
 
-        Novelbin website = new Novelbin("HOB");
-        Book book = await website.GetBook(url);
+        var website = new Novelbin("HOB");
+        var book = await website.GetBook(url);
         //book.ConsoleContent();
 
         var path = await EPubClass.Generator(book);
