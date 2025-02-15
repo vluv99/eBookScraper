@@ -67,15 +67,14 @@ public class Novelbin : IWebsite
     private IElement? GetInfoBlockData(IDocument document, string searchLabel)
     {
         var infoBlock = document.QuerySelector(".info.info-meta");
-        if (infoBlock != null)
+        if (infoBlock == null) return null;
+
+        foreach (var element in infoBlock.Children)
         {
-            foreach (var element in infoBlock.Children)
+            var label = element.QuerySelector("h3")?.TextContent.Trim();
+            if (label != null && label.Contains(searchLabel))
             {
-                var label = element.QuerySelector("h3")?.TextContent.Trim();
-                if (label != null && label.Contains(searchLabel))
-                {
-                    return element;
-                }
+                return element;
             }
         }
 
@@ -117,26 +116,26 @@ public class Novelbin : IWebsite
     {
         var chaptersUrl = document.QuerySelector("#tab-chapters-title")?.Attributes["id"]?.Value;
         var chapters = new List<Chapter>();
-        if (chaptersUrl != null)
-        {
-            // for some reason the href isn't correct, but the id is, so using that
-            string chaptersHtml = await Fetcher.GetPage(bookUrl + "#" + chaptersUrl, Prefix, true);
-            var chaptersDocument = Parser.ParseDocument(chaptersHtml);
 
-            var chaptersListElement = chaptersDocument.QuerySelectorAll(".list-chapter");
-            foreach (var element in chaptersListElement)
+        if (chaptersUrl == null) return chapters;
+
+        // for some reason the href isn't correct, but the id is, so using that
+        var chaptersHtml = await Fetcher.GetPage(bookUrl + "#" + chaptersUrl, Prefix, true);
+        var chaptersDocument = Parser.ParseDocument(chaptersHtml);
+
+        var chaptersListElement = chaptersDocument.QuerySelectorAll(".list-chapter");
+        foreach (var element in chaptersListElement)
+        {
+            var res = element.QuerySelectorAll("a")?.Select((a) =>
             {
-                var res = element.QuerySelectorAll("a")?.Select((a) =>
+                var chapter = new Chapter
                 {
-                    var chapter = new Chapter
-                    {
-                        Title = a.TextContent.Trim().Replace("\u00A0", "").Replace("\u200C", ""),
-                        Url = a.Attributes["href"]?.Value ?? ""
-                    };
-                    return chapter;
-                }).ToList();
-                chapters.AddRange(res ?? []);
-            }
+                    Title = a.TextContent.Trim().Replace("\u00A0", "").Replace("\u200C", ""),
+                    Url = a.Attributes["href"]?.Value ?? ""
+                };
+                return chapter;
+            }).ToList();
+            chapters.AddRange(res ?? []);
         }
 
 
@@ -152,33 +151,25 @@ public class Novelbin : IWebsite
     private async Task<List<string>> GetChapterContent(Chapter chapter)
     {
         var content = new List<string>();
-        if (chapter.Url != "")
-        {
-            var html = await Fetcher.GetPage(chapter.Url, "HOB");
-            IDocument chapterDocument = Parser.ParseDocument(html);
-            content = chapterDocument
-                .QuerySelectorAll("#chr-content > p")
-                .Select((p) =>
-                {
-                    var containsImg = p.QuerySelector("img");
-                    if (containsImg != null)
-                    {
-                        p.RemoveChild(containsImg);
-                    }
 
-                    return p;
-                })
-                .Select(p =>
-                {
-                    if (String.IsNullOrWhiteSpace(p.InnerHtml))
-                    {
-                        return "";
-                    }
+        if (chapter.Url == "") return content;
 
-                    return p.OuterHtml.Trim();
-                })
-                .ToList();
-        }
+        var html = await Fetcher.GetPage(chapter.Url, "HOB");
+        IDocument chapterDocument = Parser.ParseDocument(html);
+        content = chapterDocument
+            .QuerySelectorAll("#chr-content > p")
+            .Select((p) =>
+            {
+                var containsImg = p.QuerySelector("img");
+                if (containsImg != null)
+                {
+                    p.RemoveChild(containsImg);
+                }
+
+                return p;
+            })
+            .Select(p => string.IsNullOrWhiteSpace(p.InnerHtml) ? "" : p.OuterHtml.Trim())
+            .ToList();
 
         return content;
     }

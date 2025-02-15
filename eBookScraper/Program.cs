@@ -8,9 +8,9 @@ internal class Program
         MainAsync(args).GetAwaiter().GetResult();
     }
 
-    static async Task MainAsync(string[] args)
+    private static async Task MainAsync(string[] args)
     {
-        var url = "https://novelbin.me/novel-book/heaven-officials-blessing";
+        const string url = "https://novelbin.me/novel-book/heaven-officials-blessing";
 
         var website = new Novelbin("HOB");
         var book = await website.GetBook(url);

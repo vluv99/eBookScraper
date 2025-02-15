@@ -42,7 +42,8 @@ public static class Fetcher
     private static string GetFileName(string url)
     {
         var segments = url.Split('/');
-        return segments[segments.Length - 1];
+        // segments.Length - 1 => Index expression that means "from the end", usage: ^(int fromEnd)
+        return segments[^1];
     }
 
     private static async Task<string> UsePuppeteer(string url)
