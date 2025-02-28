@@ -12,8 +12,7 @@ public static class EPubClass
         epub.AddTitle(book.Title);
         epub.AddAuthor(book.Author);
 
-        var client = new HttpClient();
-        var imageBytes = await client.GetByteArrayAsync(book.ImageUrl);
+        var imageBytes = await File.ReadAllBytesAsync(book.ImagePath);
         var coverImageId = epub.AddImageData("cover.jpg", imageBytes);
         epub.AddMetaItem("cover", coverImageId);
 
