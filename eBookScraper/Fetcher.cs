@@ -46,6 +46,26 @@ public static class Fetcher
         return segments[^1];
     }
 
+    public static async Task<string> DownloadImageAsync(Uri uri, string prefix)
+    {
+        using var httpClient = new HttpClient();
+
+        // Get the file extension
+        var uriWithoutQuery = uri.GetLeftPart(UriPartial.Path);
+        var fileExtension = Path.GetExtension(uriWithoutQuery);
+
+        // Create file path and ensure directory exists
+        var path = Path.Combine(SavePath, $"{prefix}_coverImg{fileExtension}");
+
+        if (File.Exists(path)) return path;
+
+        // Download the image and write to the file
+        var imageBytes = await httpClient.GetByteArrayAsync(uri);
+        await File.WriteAllBytesAsync(path, imageBytes);
+
+        return path;
+    }
+
     private static async Task<string> UsePuppeteer(string url)
     {
         var launchOptions = new LaunchOptions()

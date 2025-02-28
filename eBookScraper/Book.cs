@@ -4,6 +4,7 @@ public class Book
 {
     public string Title = "";
     public string ImageUrl = "";
+    public string ImagePath = "";
     public string Author = "";
     public List<string> AltNames = [];
     public List<string> Genres = [];

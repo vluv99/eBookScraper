@@ -32,6 +32,7 @@ public class Novelbin : IWebsite
         book.Title = GetTitle(document);
         // Get the image url
         book.ImageUrl = GetImageUrl(document);
+        book.ImagePath = await GetImagePath(book.ImageUrl, Prefix);
         // Get description
         book.Description = GetDescription(document);
         // Get book infos
@@ -57,6 +58,14 @@ public class Novelbin : IWebsite
     {
         var e = document.QuerySelector(".book > img");
         return e?.Attributes.First(attr => attr.Name == "data-src").Value ?? "";
+    }
+
+    private async Task<string> GetImagePath(string imageUrl, string prefix)
+    {
+        if (imageUrl == "") return "";
+
+        var uri = new Uri(imageUrl);
+        return await Fetcher.DownloadImageAsync(uri, prefix);
     }
 
     private string GetDescription(IDocument document)
