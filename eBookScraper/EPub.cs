@@ -28,10 +28,19 @@ public static class EPubClass
                                               padding: 0;
                                               margin: 0;
                                           }
+                                          h1{
+                              	            text-align: center;
+                                          }
                                       </style>
                                   </head>
                                   <body>
-                                      {{book.Description}}
+                                      <h1>{{book.Title}}</h1>
+                                      <p>Author: {{book.Author}}</p>
+                                      <p>Alternative names: {{string.Join(", ", book.AltNames)}}</p>
+                                      <p>Genres: {{string.Join(", ", book.Genres)}}</p>
+                                      <p>Status: {{book.Status}}</p>
+                                      <p>Rating: {{book.Rating}}</p>
+                                      <p>Description: {{book.Description}}</p>
                                   </body>
                               </html>
                               """;
