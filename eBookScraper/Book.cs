@@ -18,6 +18,7 @@ public class Book
     {
         Console.WriteLine("title: " + Title);
         Console.WriteLine("imageUrl: " + ImageUrl);
+        Console.WriteLine("imagePath: " + ImagePath);
         Console.WriteLine("author: " + Author);
         Console.WriteLine("alt names: " + string.Join(", ", AltNames));
         Console.WriteLine("status: " + Status);

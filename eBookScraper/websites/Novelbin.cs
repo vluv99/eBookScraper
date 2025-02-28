@@ -64,8 +64,13 @@ public class Novelbin : IWebsite
     {
         if (imageUrl == "") return "";
 
-        var uri = new Uri(imageUrl);
-        return await Fetcher.DownloadImageAsync(uri, prefix);
+        var isUriConverted = Uri.TryCreate(imageUrl, UriKind.Absolute, out var uriResult);
+        if (isUriConverted && uriResult != null)
+        {
+            return await Fetcher.DownloadImageAsync(uriResult, prefix);
+        }
+
+        return "";
     }
 
     private string GetDescription(IDocument document)
